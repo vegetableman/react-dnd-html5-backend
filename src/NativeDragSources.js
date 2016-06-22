@@ -15,8 +15,17 @@ const nativeTypesConfig = {
   [NativeTypes.FILE]: {
     exposeProperty: 'files',
     matchesTypes: ['Files'],
-    getData: (dataTransfer) =>
-      Array.prototype.slice.call(dataTransfer.files)
+    getData: (dataTransfer) => {
+      var items = Array.prototype.slice.call(dataTransfer.items);
+      for (var i = 0; i < length; i++) {
+        var entry = dataTransfer.items[i].webkitGetAsEntry();
+        if (entry.isFile) {
+          return {type: 'file', list: Array.prototype.slice.call(dataTransfer.files)}
+        } else if (entry.isDirectory) {
+          return {type: 'directory', list: items};
+        }
+      }
+    }
   },
   [NativeTypes.URL]: {
     exposeProperty: 'urls',
